@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:80" # Redirige le port 80 du conteneur vers le port 8080 de l'hôte
+      - "4200:80" # Redirige le port 80 du conteneur vers le port 8080 de l'hôte
     restart: always
 
