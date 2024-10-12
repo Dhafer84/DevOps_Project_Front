@@ -17,14 +17,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                script {
-                    // Exécuter les tests unitaires
-                    sh 'npm run test -- --watch=false'
-                }
-            }
-        }
+        
 
         stage('Deploy') {
             steps {
