@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'Docker' // ID des credentials configurés
-        DOCKER_IMAGE = "uncledhafer/devopsproject"  // Nom de l'image sans version
+        DOCKER_IMAGE = "uncledhafer/frontendprojectdevops"  // Nom de l'image sans version
     }
 
     stages {
