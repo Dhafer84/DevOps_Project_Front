@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_CREDENTIALS_ID = 'Docker' // ID des credentials configurés
+        DOCKER_IMAGE = "uncledhafer/devopsproject"  // Nom de l'image sans version
+    }
+
     stages {
         stage('Import Project from Git') {
             steps {
@@ -18,7 +23,22 @@ pipeline {
             }
         }
 
-        
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    // Authentifier Docker Hub
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+
+                        // Taguer l'image
+                        sh "docker tag devops_project_front:latest ${DOCKER_IMAGE}:latest"
+
+                        // Pousser l'image vers Docker Hub
+                        sh "docker push ${DOCKER_IMAGE}:latest"
+                    }
+                }
+            }
+        }
 
         stage('Deploy') {
             steps {
