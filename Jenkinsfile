@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Import Project from Git') {
             steps {
                 git branch: 'main', url: 'https://github.com/Dhafer84/DevOps_Project_Front.git'
+                echo 'Téléchargement du projet...'
             }
         }
 
