@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'Docker'
-        DOCKER_IMAGE = "uncledhafer/frontendprojectdevops"
+        DOCKER_CREDENTIALS_ID = 'Docker' // ID des credentials configurés
+        DOCKER_IMAGE = "uncledhafer/frontendprojectdevops" // Nom de l'image sans version
         PACKAGE_JSON_PATH = 'package.json' // Chemin vers votre package.json
     }
 
@@ -38,9 +38,11 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh "docker tag piplinefrontend_angular-app:latest ${DOCKER_IMAGE}:latest"
+                        // Taguer l'image avec le bon nom et la version
+                        sh "docker tag piplinefrontend_angular-app:latest ${DOCKER_IMAGE}:${env.VERSION}" // Tag avec la version
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                        sh "docker push ${DOCKER_IMAGE}:latest"
+                        // Pousser l'image vers Docker Hub
+                        sh "docker push ${DOCKER_IMAGE}:${env.VERSION}" // Pousser avec la version
                     }
                 }
             }
