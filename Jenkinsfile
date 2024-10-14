@@ -14,19 +14,29 @@ pipeline {
             }
         }
 
-	stage('Push to Docker Hub') {
-	    steps {
-		script {
-		    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-		        // Taguer l'image avec le bon nom
-		        sh "docker tag piplinefrontend_angular-app:latest uncledhafer/frontendprojectdevops:latest"
-		        // Pousser l'image vers Docker Hub
-		        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-		        sh "docker push uncledhafer/frontendprojectdevops:latest"
-		    }
-		}
-	    }
-	}
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Construire l'image Docker ici, remplacez ceci par votre commande de construction
+                    sh 'docker build -t piplinefrontend_angular-app:latest .'
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        // Taguer l'image avec le bon nom
+                        sh "docker tag piplinefrontend_angular-app:latest ${DOCKER_IMAGE}:latest"
+                        // Se connecter à Docker Hub
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        // Pousser l'image vers Docker Hub
+                        sh "docker push ${DOCKER_IMAGE}:latest"
+                    }
+                }
+            }
+        }
 
         stage('Deploy') {
             steps {
