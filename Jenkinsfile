@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'Docker' // ID des credentials configurés
-        DOCKER_IMAGE = "uncledhafer/frontendprojectdevops"  // Nom de l'image sans version
+        DOCKER_CREDENTIALS_ID = 'Docker'
+        DOCKER_IMAGE = "uncledhafer/frontendprojectdevops"
+        PACKAGE_JSON_PATH = 'package.json' // Chemin vers votre package.json
     }
 
     stages {
@@ -14,11 +15,21 @@ pipeline {
             }
         }
 
+        stage('Get Version') {
+            steps {
+                script {
+                    // Récupérer la version depuis package.json
+                    def json = readJSON file: PACKAGE_JSON_PATH
+                    env.VERSION = json.version
+                    echo "Version de l'application : ${env.VERSION}"
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construire l'image Docker ici, remplacez ceci par votre commande de construction
-                    sh 'docker build -t piplinefrontend_angular-app:latest .'
+                    sh "docker build --build-arg VERSION=${env.VERSION} -t piplinefrontend_angular-app:latest ."
                 }
             }
         }
@@ -27,11 +38,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        // Taguer l'image avec le bon nom
                         sh "docker tag piplinefrontend_angular-app:latest ${DOCKER_IMAGE}:latest"
-                        // Se connecter à Docker Hub
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                        // Pousser l'image vers Docker Hub
                         sh "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
@@ -41,8 +49,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Lancer l'application avec Docker Compose
-                    sh 'docker-compose up --build -d'
+                    sh 'docker-compose down --volumes --remove-orphans || true' // Étape de nettoyage
+                    sh 'docker-compose up --build -d' // Construire et lancer
                 }
             }
         }
