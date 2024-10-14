@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     // Lancer l'application avec Docker Compose
-                    sh 'docker-compose up -d'
+                    sh 'docker-compose up'
                 }
             }
         }
