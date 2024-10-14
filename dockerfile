@@ -20,7 +20,7 @@ RUN npm run build --prod
 FROM nginx:alpine
 
 # Copie les fichiers de build vers le répertoire de nginx
-COPY --from=build /app/dist/votre-nom-de-projet /usr/share/nginx/html
+COPY --from=build /app/dist/summer-workshop-angular /usr/share/nginx/html
 
 # Expose le port 80
 EXPOSE 80
