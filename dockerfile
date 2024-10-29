@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Exécute la construction de l'application
-RUN npm run build
+RUN npm run build --prod
 RUN chmod -R 755 /app/dist
 
 # Étape 2: Création de l'image finale
